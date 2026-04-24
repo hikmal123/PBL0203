@@ -15,17 +15,6 @@
   # Folder output: build.py menghasilkan file di folder public/
   publish = "public"
 
-# ── Redirects ──────────────────────────────────────────────
-# 1. Normalkan trailing slash: /pbl0203 → /pbl0203/
-[[redirects]]
-  from   = "/pbl0203"
-  to     = "/pbl0203/"
-  status = 301
-  force  = true
-
-# 2. Opsional: Redirect ke index.html untuk behavior SPA jika diperlukan
-# Namun karena ini Multi-Page Static, kita biarkan default untuk kejelasan.
-
 # ── Security Headers ───────────────────────────────────────
 [[headers]]
   for = "/*"

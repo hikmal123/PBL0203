@@ -89,7 +89,7 @@ with open(out_path, "w", encoding="utf-8") as f:
     f.write(html)
 print(f"[OK] Rendered -> {out_path}")
 
-# ── 6. Render dashboard -> public/pbl0203/index.html ────────
+# ── 6. Render dashboard -> public/pbl0203.html ───────────────
 tmpl = jinja_env.get_template("pbl0203.html")
 html = tmpl.render(
     students            = students_data,
@@ -107,7 +107,7 @@ html = tmpl.render(
     purpose_counts_json = json.dumps(purpose_counts),
     satisfaction_counts_json = json.dumps(satisfaction_counts),
 )
-out_path = os.path.join(BUILD_DIR, "pbl0203", "index.html")
+out_path = os.path.join(BUILD_DIR, "pbl0203.html")
 with open(out_path, "w", encoding="utf-8") as f:
     f.write(html)
 print(f"[OK] Rendered -> {out_path}")
