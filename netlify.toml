@@ -16,7 +16,7 @@
 # Redirect semua request HTTP ke handler Netlify Function
 [[redirects]]
   from   = "/*"
-  to     = "/.netlify/functions/handler/:splat"
+  to     = "/.netlify/functions/handler/"
   status = 200
 
 # Variabel environment (opsional, bisa diatur di dashboard Netlify)
