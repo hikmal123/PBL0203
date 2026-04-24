@@ -1,0 +1,24 @@
+# netlify.toml — Konfigurasi Deployment Netlify
+# ================================================
+# File ini mengatur cara Netlify membangun dan men-deploy
+# aplikasi Falcon serverless PBL0203.
+
+[build]
+  # Perintah build: install dependensi
+  command = "pip install -r requirements.txt"
+
+  # Folder yang dipublikasikan (untuk aset statis)
+  publish = "static"
+
+  # Lokasi folder fungsi serverless
+  functions = "netlify/functions"
+
+# Redirect semua request HTTP ke handler Netlify Function
+[[redirects]]
+  from   = "/*"
+  to     = "/.netlify/functions/handler/:splat"
+  status = 200
+
+# Variabel environment (opsional, bisa diatur di dashboard Netlify)
+[build.environment]
+  PYTHON_VERSION = "3.11"
