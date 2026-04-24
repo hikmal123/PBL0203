@@ -147,6 +147,16 @@ class PBL0203Resource:
         resp.text = rendered
 
 
+class WelcomeResource:
+    """Render the simple bright welcome page."""
+
+    async def on_get(self, req, resp):
+        template = jinja_env.get_template("welcome.html")
+        resp.status = falcon.HTTP_200
+        resp.content_type = "text/html; charset=utf-8"
+        resp.text = template.render()
+
+
 class StaticResource:
     """Serve file statis (CSS, JS, gambar) dari folder static/."""
 
@@ -169,8 +179,10 @@ class StaticResource:
         }
         resp.content_type = content_types.get(ext, "application/octet-stream")
 
-        with open(file_path, "r", encoding="utf-8") as f:
-            resp.text = f.read()
+        # Baca file
+        mode = "rb"
+        with open(file_path, mode) as f:
+            resp.data = f.read()
 
 
 # ============================================================
@@ -179,7 +191,7 @@ class StaticResource:
 app = falcon.asgi.App()
 
 # Route registrasi
-app.add_route("/", PBL0203Resource())
+app.add_route("/", WelcomeResource())
 app.add_route("/pbl0203", PBL0203Resource())
 app.add_route("/static/{filepath}", StaticResource())
 
