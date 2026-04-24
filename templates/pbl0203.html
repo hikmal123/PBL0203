@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PBL0203 — Analisis penggunaan AI Tools oleh mahasiswa menggunakan Falcon + Mangum + Pandas">
+    <title>PBL0203 — AI Student Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="brand-icon">📊</span>
+            <span class="brand-text">PBL0203</span>
+        </div>
+        <div class="nav-info">
+            <span class="tech-badge">Falcon</span>
+            <span class="tech-badge">Mangum</span>
+            <span class="tech-badge">Pandas</span>
+            <span class="tech-badge">Jinja2</span>
+        </div>
+    </nav>
+
+    <!-- ========== HERO HEADER ========== -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">AI Student Analytics</h1>
+            <p class="hero-subtitle">
+                Analisis penggunaan AI Tools oleh mahasiswa &mdash; Dataset dari
+                <strong>AI Student Life Pakistan 2026</strong>
+            </p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <span class="stat-number">{{ total_students }}</span>
+                    <span class="stat-label">Total Students</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ avg_usage }}h</span>
+                    <span class="stat-label">Avg. Daily Usage</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ tool_counts | length }}</span>
+                    <span class="stat-label">AI Tools Used</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ purpose_counts | length }}</span>
+                    <span class="stat-label">Use Categories</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ========== CHARTS SECTION ========== -->
+        <section class="section" id="charts">
+            <h2 class="section-title">📈 Visual Analytics</h2>
+            <div class="charts-grid">
+
+                <!-- AI Tool Distribution -->
+                <div class="chart-card">
+                    <h3 class="chart-title">AI Tool Popularity</h3>
+                    <div class="bar-chart" id="tool-chart">
+                        {% for tool, count in tool_counts.items() %}
+                        <div class="bar-row">
+                            <span class="bar-label">{{ tool }}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill tool-bar" style="width: {{ (count / total_students * 100) | round(1) }}%;" data-value="{{ count }}">
+                                    <span class="bar-value">{{ count }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Impact on Grades -->
+                <div class="chart-card">
+                    <h3 class="chart-title">Impact on Grades</h3>
+                    <div class="donut-stats">
+                        {% for impact, count in impact_counts.items() %}
+                        <div class="donut-item">
+                            <div class="donut-ring 
+                                {% if impact == 'Improved' %}impact-improved
+                                {% elif impact == 'No Change' %}impact-nochange
+                                {% elif impact == 'Slight Decline' %}impact-decline
+                                {% endif %}">
+                                <span class="donut-number">{{ count }}</span>
+                            </div>
+                            <span class="donut-label">{{ impact }}</span>
+                            <span class="donut-percent">{{ (count / total_students * 100) | round(1) }}%</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Purpose Distribution -->
+                <div class="chart-card">
+                    <h3 class="chart-title">Usage Purpose</h3>
+                    <div class="bar-chart" id="purpose-chart">
+                        {% for purpose, count in purpose_counts.items() %}
+                        <div class="bar-row">
+                            <span class="bar-label">{{ purpose }}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill purpose-bar" style="width: {{ (count / total_students * 100) | round(1) }}%;" data-value="{{ count }}">
+                                    <span class="bar-value">{{ count }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Satisfaction Level -->
+                <div class="chart-card">
+                    <h3 class="chart-title">Satisfaction Level</h3>
+                    <div class="donut-stats">
+                        {% for level, count in satisfaction_counts.items() %}
+                        <div class="donut-item">
+                            <div class="donut-ring 
+                                {% if level == 'High' %}sat-high
+                                {% elif level == 'Medium' %}sat-medium
+                                {% elif level == 'Low' %}sat-low
+                                {% endif %}">
+                                <span class="donut-number">{{ count }}</span>
+                            </div>
+                            <span class="donut-label">{{ level }}</span>
+                            <span class="donut-percent">{{ (count / total_students * 100) | round(1) }}%</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========== AVG USAGE PER TOOL ========== -->
+        <section class="section" id="usage-per-tool">
+            <h2 class="section-title">⏱️ Average Daily Usage per AI Tool</h2>
+            <div class="usage-cards">
+                {% for tool, avg in avg_usage_per_tool.items() %}
+                <div class="usage-card">
+                    <div class="usage-tool-name">{{ tool }}</div>
+                    <div class="usage-hours">{{ avg }}<span class="usage-unit">h/day</span></div>
+                    <div class="usage-bar-mini">
+                        <div class="usage-bar-fill" style="width: {{ (avg / 6 * 100) | round }}%;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- ========== EDUCATION DISTRIBUTION ========== -->
+        <section class="section" id="education">
+            <h2 class="section-title">🎓 Education Level Distribution</h2>
+            <div class="education-grid">
+                {% for level, count in education_counts.items() %}
+                <div class="edu-card">
+                    <div class="edu-icon">
+                        {% if level == 'School' %}🏫
+                        {% elif level == 'College' %}📚
+                        {% elif level == 'University' %}🎓
+                        {% endif %}
+                    </div>
+                    <div class="edu-level">{{ level }}</div>
+                    <div class="edu-count">{{ count }} students</div>
+                    <div class="edu-percent">{{ (count / total_students * 100) | round(1) }}%</div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- ========== DATA TABLE ========== -->
+        <section class="section" id="data-table">
+            <div class="section-header">
+                <h2 class="section-title">📋 Student Data Table</h2>
+                <div class="table-controls">
+                    <input type="text" id="search-input" class="search-box" 
+                           placeholder="Search students..." oninput="filterTable()">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-wrapper">
+                    <table id="student-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Education</th>
+                                <th>AI Tool</th>
+                                <th>Usage (h/day)</th>
+                                <th>Purpose</th>
+                                <th>Impact</th>
+                                <th>Satisfaction</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in students %}
+                            <tr>
+                                <td>{{ s.Student_ID }}</td>
+                                <td>{{ s.Age }}</td>
+                                <td>
+                                    <span class="gender-badge {{ 'gender-male' if s.Gender == 'Male' else 'gender-female' }}">
+                                        {{ s.Gender }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="edu-badge">{{ s.Education_Level }}</span>
+                                </td>
+                                <td>
+                                    <span class="tool-badge tool-{{ s.AI_Tool_Used | lower | replace(' ', '-') }}">
+                                        {{ s.AI_Tool_Used }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="usage-inline">
+                                        <span>{{ s.Daily_Usage_Hours }}</span>
+                                        <div class="usage-micro-bar">
+                                            <div class="usage-micro-fill" style="width: {{ (s.Daily_Usage_Hours / 6 * 100) | round }}%;"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ s.Purpose }}</td>
+                                <td>
+                                    <span class="impact-badge 
+                                        {% if s.Impact_on_Grades == 'Improved' %}impact-badge-improved
+                                        {% elif s.Impact_on_Grades == 'No Change' %}impact-badge-nochange
+                                        {% elif s.Impact_on_Grades == 'Slight Decline' %}impact-badge-decline
+                                        {% endif %}">
+                                        {% if s.Impact_on_Grades == 'Improved' %}▲
+                                        {% elif s.Impact_on_Grades == 'No Change' %}●
+                                        {% elif s.Impact_on_Grades == 'Slight Decline' %}▼
+                                        {% endif %}
+                                        {{ s.Impact_on_Grades }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="sat-badge 
+                                        {% if s.Satisfaction_Level == 'High' %}sat-badge-high
+                                        {% elif s.Satisfaction_Level == 'Medium' %}sat-badge-medium
+                                        {% elif s.Satisfaction_Level == 'Low' %}sat-badge-low
+                                        {% endif %}">
+                                        {{ s.Satisfaction_Level }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>PBL0203 &mdash; Built with <strong>Falcon</strong> + <strong>Mangum</strong> + <strong>Pandas</strong> + <strong>Jinja2</strong></p>
+            <p class="footer-sub">AI Student Life Pakistan 2026 Dataset Analysis</p>
+        </div>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        // Search/Filter table
+        function filterTable() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll('#student-table tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // Animate bars on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.bar-fill, .stat-card, .chart-card, .usage-card, .edu-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
