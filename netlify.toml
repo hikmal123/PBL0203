@@ -1,24 +1,41 @@
-# netlify.toml — Konfigurasi Deployment Netlify
-# ================================================
-# File ini mengatur cara Netlify membangun dan men-deploy
-# aplikasi Falcon serverless PBL0203.
+# netlify.toml — Konfigurasi Netlify untuk PBL0203
+# ==================================================
+# Proyek ini adalah Python Falcon + Pandas + Jinja2.
+# Menggunakan npm sebagai bridge untuk build pipeline di Netlify.
+#
+# Strategi: Static Site Generation (SSG)
+#   1. npm install -> pip install (via postinstall)
+#   2. npm run build -> python build.py
+#   3. Netlify serve folder `public/` sebagai static site
 
 [build]
-  # Perintah build: install dependensi
-  command = "pip install -r requirements.txt"
+  # Perintah build: Menggunakan npm script yang memanggil python build.py
+  command = "npm run build"
 
-  # Folder yang dipublikasikan (untuk aset statis)
-  publish = "static"
+  # Folder output: build.py menghasilkan file di folder public/
+  publish = "public"
 
-  # Lokasi folder fungsi serverless
-  functions = "netlify/functions"
-
-# Redirect semua request HTTP ke handler Netlify Function
+# ── Redirects ──────────────────────────────────────────────
+# 1. Normalkan trailing slash: /pbl0203 → /pbl0203/
 [[redirects]]
-  from   = "/*"
-  to     = "/.netlify/functions/handler/"
-  status = 200
+  from   = "/pbl0203"
+  to     = "/pbl0203/"
+  status = 301
+  force  = true
 
-# Variabel environment (opsional, bisa diatur di dashboard Netlify)
-[build.environment]
-  PYTHON_VERSION = "3.11"
+# 2. Opsional: Redirect ke index.html untuk behavior SPA jika diperlukan
+# Namun karena ini Multi-Page Static, kita biarkan default untuk kejelasan.
+
+# ── Security Headers ───────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options        = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+
+# ── Cache static assets aggressively ──────────────────────
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

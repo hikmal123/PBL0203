@@ -1,0 +1,13 @@
+{
+  "name": "pbl0203-netlify",
+  "version": "1.0.0",
+  "description": "Python Static Site for Netlify Deployment",
+  "scripts": {
+    "build": "python build.py",
+    "install-python": "pip install -r requirements.txt",
+    "postinstall": "npm run install-python"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
