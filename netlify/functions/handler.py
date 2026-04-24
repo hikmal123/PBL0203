@@ -22,4 +22,4 @@ from main import app  # Falcon ASGI app dari main.py
 
 # Bungkus Falcon ASGI app dengan Mangum adapter
 # Ini yang akan dipanggil oleh Netlify Function saat ada request masuk
-handler = Mangum(app, lifespan="off")
+handler = Mangum(app)
